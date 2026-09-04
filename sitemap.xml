@@ -4,6 +4,8 @@
   <url><loc>https://kopersay.com/products.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://kopersay.com/about.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
   <url><loc>https://kopersay.com/contact.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/services.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/seo.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://kopersay.com/wms.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://kopersay.com/wmsdetails.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
   <url><loc>https://kopersay.com/wms-dashboard.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
