@@ -1,0 +1,41 @@
+name: Sync Kopersay India Site to Global Site
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout global repository
+        uses: actions/checkout@v4
+
+      - name: Clone India site
+        run: |
+          git clone --depth 1 https://github.com/thegkexpert662-afk/kopersay-wms1.git /tmp/kopersay-in
+
+      - name: Copy website
+        run: |
+          rsync -a --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='CNAME' \
+            /tmp/kopersay-in/ ./
+          find . -type f \( -name '*.html' -o -name '*.xml' -o -name '*.json' -o -name '*.txt' -o -name '*.js' -o -name '*.css' \) \
+            -not -path './.git/*' \
+            -not -path './.github/*' \
+            -exec sed -i 's#https://kopersay\.in#https://kopersay.com#g' {} +
+
+      - name: Keep global CNAME
+        run: echo "kopersay.com" > CNAME
+
+      - name: Commit synced site
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git diff --cached --quiet || git commit -m "Sync Kopersay.in site to Kopersay.com"
+          git push
