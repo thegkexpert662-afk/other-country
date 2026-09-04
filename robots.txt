@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Prevent indexing of the WMS login/auth page.
+Disallow: /wms-login.html
+
+Sitemap: https://kopersay.com/sitemap.xml
