@@ -1,0 +1,37 @@
+name: Restore Founder Section
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-home:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Add founder section if missing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p = Path('index.html')
+          s = p.read_text()
+          if 'id="founder"' not in s:
+              section = '''\n<section class="section" id="founder"><div class="section-title"><h2>Meet the Founder</h2><p>Leadership behind Kopersay Technologies.</p></div><div style="max-width:1000px;margin:auto;display:grid;grid-template-columns:300px 1fr;gap:30px;align-items:center;padding:30px;border-radius:28px;background:rgba(255,255,255,.68);border:2px solid rgba(255,255,255,.9);box-shadow:0 20px 55px rgba(37,100,150,.15)"><img src="assets/founder-ceo-portrait.png" alt="Founder and CEO of Kopersay Technologies" style="width:100%;height:300px;object-fit:cover;border-radius:22px"><div><span class="about-label">FOUNDER & CEO</span><h2 style="margin:10px 0">Founder & CEO</h2><h3>Kopersay Technologies</h3><p style="color:#61728a;font-size:12px">Building technology products and digital solutions with a focus on innovation, practical business value and a global vision.</p><a class="btn btn-primary" href="#contact">Talk to Our Team</a></div></div></section>\n'''
+              marker = '<section class="contact-box" id="contact">'
+              if marker in s:
+                  s = s.replace(marker, section + marker, 1)
+              else:
+                  s = s.replace('</body>', section + '</body>', 1)
+              p.write_text(s)
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet || git commit -m "Restore home content and add founder section"
+          git push
