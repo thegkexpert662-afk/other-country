@@ -1,0 +1,33 @@
+name: Copy Pages 9-11
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout global site
+        uses: actions/checkout@v4
+
+      - name: Clone India site
+        run: git clone --depth 1 https://github.com/thegkexpert662-afk/kopersay-wms1.git /tmp/kopersay-in
+
+      - name: Copy pages 9-11
+        run: |
+          cp /tmp/kopersay-in/vision.html ./vision.html
+          cp /tmp/kopersay-in/why-kopersay.html ./why-kopersay.html
+          cp /tmp/kopersay-in/contact.html ./contact.html
+          sed -i 's#https://kopersay\.in#https://kopersay.com#g' vision.html why-kopersay.html contact.html
+
+      - name: Commit copied pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add vision.html why-kopersay.html contact.html
+          git diff --cached --quiet || git commit -m "Copy pages 9-11 to global site [skip ci]"
+          git push
