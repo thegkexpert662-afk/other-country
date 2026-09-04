@@ -4,8 +4,7 @@ on:
   push:
     branches: [main]
   schedule:
-    # GitHub Actions scheduled workflows have a minimum practical interval of 5 minutes.
-    - cron: '*/5 * * * *'
+    - cron: '*/10 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -40,12 +39,9 @@ jobs:
             echo "$headers" | grep -qi '^HTTP/.* 200' || {
               echo "FAIL: $url did not return HTTP 200"; exit 1;
             }
-            echo "$headers" | grep -qi '^strict-transport-security:' || \
-              echo "WARN: HSTS header missing on $url"
-            echo "$headers" | grep -qi '^x-content-type-options:' || \
-              echo "WARN: X-Content-Type-Options missing on $url"
-            echo "$headers" | grep -qi '^x-frame-options:' || \
-              echo "WARN: X-Frame-Options missing on $url"
+            echo "$headers" | grep -qi '^strict-transport-security:' || echo "WARN: HSTS header missing on $url"
+            echo "$headers" | grep -qi '^x-content-type-options:' || echo "WARN: X-Content-Type-Options missing on $url"
+            echo "$headers" | grep -qi '^x-frame-options:' || echo "WARN: X-Frame-Options missing on $url"
           done
 
           echo "Checking sitemap and robots.txt..."
