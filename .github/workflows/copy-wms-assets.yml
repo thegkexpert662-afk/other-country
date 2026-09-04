@@ -1,0 +1,60 @@
+name: Copy WMS Assets
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copy-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Copy assets from kopersay-wms1
+        run: |
+          set -e
+          mkdir -p assets
+          files=(
+            cookmitra.png
+            file_00000000f20c82119ccd20631a40c884.png
+            founder-ceo-portrait.png
+            kopersay-qr.png
+            kopersay.png
+            kopersay1.png
+            kopersay2.png
+            navnita-kumari.jpg.png
+            videomitra.png
+            wms-dashboard-overview.png
+            wms-dashboard.png
+            wms-demo.png
+            wms-employees.png
+            wms-inventory-details.png
+            wms-inventory.png
+            wms-inward-grn.png
+            wms-login.png
+            wms-outward-dispatch.png
+            wms-reports.png
+            wms-warehouse.png
+          )
+          for file in "${files[@]}"; do
+            curl -L --fail --retry 3 "https://raw.githubusercontent.com/thegkexpert662-afk/kopersay-wms1/main/assets/$file" -o "assets/$file"
+          done
+
+      - name: Commit copied assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/
+          if git diff --cached --quiet; then
+            echo "No asset changes to commit."
+          else
+            git commit -m "Copy WMS assets from kopersay-wms1"
+            git push
+          fi
