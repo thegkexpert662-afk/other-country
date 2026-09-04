@@ -1,0 +1,42 @@
+name: Copy Kopersay Pages 12-15
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  copy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout global site
+        uses: actions/checkout@v4
+
+      - name: Clone India site
+        run: |
+          git clone --depth 1 https://github.com/thegkexpert662-afk/kopersay-wms1.git /tmp/kopersay-in
+
+      - name: Copy pages 12-15 and rewrite global URLs
+        run: |
+          mkdir -p .tmp-pages
+          cp /tmp/kopersay-in/kopsay-qr.html .tmp-pages/kopsay-qr.html
+          cp /tmp/kopersay-in/cookmitra.html .tmp-pages/cookmitra.html
+          cp /tmp/kopersay-in/snappazzel.html .tmp-pages/snappazzel.html
+          cp /tmp/kopersay-in/videomitra.html .tmp-pages/videomitra.html
+          find .tmp-pages -type f -name '*.html' -exec sed -i 's#https://kopersay\.in#https://kopersay.com#g' {} +
+          cp .tmp-pages/*.html ./
+          rm -rf .tmp-pages
+
+      - name: Ensure global CNAME
+        run: echo "kopersay.com" > CNAME
+
+      - name: Commit copied pages
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add kopsay-qr.html cookmitra.html snappazzel.html videomitra.html CNAME
+          git diff --cached --quiet || git commit -m "Copy pages 12-15 to global site"
+          git push
