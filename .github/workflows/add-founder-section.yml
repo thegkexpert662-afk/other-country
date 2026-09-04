@@ -1,4 +1,4 @@
-name: Restore Founder Section
+name: Sync Founder From India Site
 
 on:
   push:
@@ -9,48 +9,57 @@ permissions:
   contents: write
 
 jobs:
-  update-home:
+  sync-founder:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Sync founder section style with India site
+      - name: Copy exact founder HTML and styling from kopersay.in source
         run: |
           python3 - <<'PY'
+          import re, urllib.request
           from pathlib import Path
-          p = Path('index.html')
-          s = p.read_text()
-          start = s.find('<section class="section" id="founder">')
+
+          target = Path('index.html')
+          s = target.read_text()
+          src_url = 'https://raw.githubusercontent.com/thegkexpert662-afk/kopersay-wms1/959e7b44156fc680402f457130cae141680f51f0/index.html'
+          src = urllib.request.urlopen(src_url, timeout=30).read().decode('utf-8')
+
+          # Use the exact Founder section markup from the India site's source.
+          m = re.search(r'<section class="founder-section" id="founder"[\\s\\S]*?</section>', src)
+          if not m:
+              raise SystemExit('Could not find founder section in India source')
+          founder_html = m.group(0)
+
+          # Replace the existing founder section, regardless of its previous markup.
+          start = s.find('<section class="founder-section" id="founder">')
           if start == -1:
-              raise SystemExit('Founder section not found')
+              start = s.find('<section class="section" id="founder">')
           end = s.find('<section class="contact-box" id="contact">', start)
-          if end == -1:
-              raise SystemExit('Contact section not found')
-          section = '''<section class="founder-section" id="founder" aria-label="Kopersay leadership">
-<div class="founder-slider">
-<div class="founder-slides"><div class="founder-slide"><div class="founder-card">
-<img class="founder-photo" src="assets/founder-ceo-portrait.png" alt="Founder and CEO of Kopersay Technologies">
-<div class="founder-content"><span class="founder-label">MEET THE FOUNDER</span><h2>Mohan Kumar Mrityunjay</h2><p class="founder-role">Founder &amp; CEO, Kopersay Technologies</p><p>Focused on building practical digital solutions through innovation, useful technology and a global vision.</p></div>
-</div></div></div>
-</div></section>\n'''
-          p.write_text(s[:start] + section + s[end:])
-          PY
-      - name: Add matching responsive styles
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p=Path('index.html'); s=p.read_text()
-          css='''\n.founder-section{max-width:1100px;margin:8px auto 30px;padding:0 18px}.founder-slider{position:relative;overflow:hidden;border-radius:28px}.founder-slides{display:flex}.founder-slide{min-width:100%}.founder-card{display:grid;grid-template-columns:220px minmax(0,1fr);gap:30px;align-items:center;padding:30px}.founder-photo{width:100%;aspect-ratio:2/3;display:block;object-fit:cover;object-position:center top;border:6px solid rgba(255,255,255,.9);border-radius:23px;box-shadow:0 17px 38px rgba(40,80,130,.22)}.founder-content h2{margin:12px 0 3px;font-size:31px}.founder-role{margin-bottom:13px;color:#6545ed;font-size:13px;font-weight:800}.founder-content>p:not(.founder-role){max-width:620px;color:#5f7088;font-size:13px}.founder-label{display:inline-block;padding:6px 13px;border:1px solid rgba(71,151,255,.48);border-radius:30px;color:#5d49df;background:rgba(255,255,255,.38);font-size:10px;letter-spacing:2px}.founder-slider{background:linear-gradient(135deg,rgba(255,255,255,.7),rgba(207,242,255,.38) 52%,rgba(236,226,255,.4));backdrop-filter:blur(20px) saturate(165%);border:2px solid rgba(255,255,255,.9);box-shadow:0 20px 55px rgba(37,100,150,.15),inset 0 1px rgba(255,255,255,1)}\n@media(max-width:800px){.founder-card{grid-template-columns:1fr;gap:18px;padding:24px}.founder-photo{width:min(260px,100%);margin:auto;aspect-ratio:2/3}.founder-content{text-align:center}.founder-content>p:not(.founder-role){margin:auto}.founder-content h2{font-size:26px}}\n'''
-          marker='</style>'
+          if start == -1 or end == -1:
+              raise SystemExit('Could not locate founder/contact boundary in target')
+          s = s[:start] + founder_html + '\n' + s[end:]
+
+          # Add the exact Founder CSS rules from the India source if missing.
+          css_rules = []
+          for selector in ['.founder-section', '.founder-slider', '.founder-slides', '.founder-slide', '.founder-card', '.founder-photo', '.founder-content h2', '.founder-role', '.founder-content>p:not(.founder-role)', '.founder-quote', '.founder-slide-btn', '.founder-prev', '.founder-next', '.founder-dots']:
+              mm = re.search(re.escape(selector) + r'\{[^}]*\}', src)
+              if mm:
+                  css_rules.append(mm.group(0))
+          # Preserve the responsive Founder styling too.
+          mm = re.search(r'@media\\(max-width:800px\\)\\{[^}]*\\.founder-card[^}]*\\}[^}]*\\}', src)
+          if mm:
+              css_rules.append(mm.group(0))
+          css = '\n' + ''.join(css_rules) + '\n'
           if '.founder-section{' not in s:
-              s=s.replace(marker,css+marker,1)
-          p.write_text(s)
+              s = s.replace('</style>', css + '</style>', 1)
+          target.write_text(s)
           PY
-      - name: Commit changes
+      - name: Commit synced Founder section
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add index.html
-          git diff --cached --quiet || git commit -m "Match founder section with India site"
+          git diff --cached --quiet || git commit -m "Sync Founder section from India site"
           git push
