@@ -1,6 +1,8 @@
 name: Restore Founder Section
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
