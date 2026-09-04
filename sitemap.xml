@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://kopersay.com/</loc><priority>1.0</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://kopersay.com/products.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://kopersay.com/about.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/contact.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://kopersay.com/wmsdetails.html</loc><priority>0.9</priority><changefreq>weekly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-dashboard.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-inventory.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-warehouse.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-employees.html</loc><priority>0.7</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-inward.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-outward.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-reports.html</loc><priority>0.8</priority><changefreq>monthly</changefreq></url>
+  <url><loc>https://kopersay.com/wms-login.html</loc><priority>0.6</priority><changefreq>monthly</changefreq></url>
+</urlset>
